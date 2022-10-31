@@ -1,6 +1,6 @@
 # MySCSSRepo
 
-This is a temporary repository to contain sample code for SCSS's IntegrationApi packagets and sample client.
+This is a temporary repository to contain SCSS's IntegrationApi nuget packages and sample client.
 
 ## Demo Client
 
