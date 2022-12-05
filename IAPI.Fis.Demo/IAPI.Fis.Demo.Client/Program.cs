@@ -14,7 +14,7 @@ namespace IAPI.Fis.Demo.Client
 {
     internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var ids = args
                 .Select(a => int.TryParse(a, out var id) ? id : 0)
@@ -30,6 +30,8 @@ namespace IAPI.Fis.Demo.Client
             var endpoint = ConfigurationManager.AppSettings["endpoint"];
             var database = ConfigurationManager.AppSettings["database"];
             var token = ConfigurationManager.AppSettings["apitoken"];
+
+            Console.WriteLine($"Preparing user sync for {database} using endpoint {endpoint}");
 
             var credentials = new AuthenticationCredentials(database, "scsstest", token, AuthenicationType.IntegrationApiSecurityToken);
 
@@ -47,7 +49,7 @@ namespace IAPI.Fis.Demo.Client
         internal Sync(string endpoint, AuthenticationCredentials credentials, List<int> ids)
         {
             _ids = ids;
-            _client = SCSSUserClient.Create(endpoint, credentials);
+            _client = SCSSUserClient.Create(endpoint, credentials, true);
         }
 
         public async Task Process()
@@ -60,8 +62,11 @@ namespace IAPI.Fis.Demo.Client
                 if (source != null)
                 {
                     var target = ToModel(source);
-                    Console.WriteLine($"Sending {source.Username} to SCView as {target.UserId}");
                     await _client.PostAsync(target);
+                }
+                else
+                {
+                    Console.WriteLine($"Could not find seUser object with pk value: {id}");
                 }
             }
         }
@@ -73,7 +78,7 @@ namespace IAPI.Fis.Demo.Client
                 SourceApplication = ApplicationId.CSIU_Fis,
                 UserId = source.Username,
                 Email = new EmailAddress(source.Email),
-                Name = new PersonName(source.FirstName, source.LastName),
+                Name = new PersonName(source.FirstName, source.LastName)
             };
         }
     }
