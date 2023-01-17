@@ -54,6 +54,10 @@ namespace IAPI.Fis.Demo.Client
 
         public async Task Process()
         {
+
+            var version = await _client.GetVersionAsync();
+            Console.WriteLine($"Versions:\n\n{version}\n");
+
             var service = new seUserService();
 
             foreach (var id in _ids)
@@ -73,13 +77,21 @@ namespace IAPI.Fis.Demo.Client
 
         private UserModel ToModel(seUser source)
         {
-            return new UserModel
+            var result = new UserModel
             {
                 SourceApplication = ApplicationId.CSIU_Fis,
                 UserId = source.Username,
                 Email = new EmailAddress(source.Email),
-                Name = new PersonName(source.FirstName, source.LastName)
+                Name = new PersonName(source.FirstName, source.LastName),
             };
+
+            if (result.UserId == "rtrently")
+            {
+                result.PrimaryPhone = new Phone("419-555-9876");
+            }
+
+            return result;
+
         }
     }
 }
